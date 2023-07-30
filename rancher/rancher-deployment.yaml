@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rancher-app
+  namespace: rancher
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rancher-app
+  template:
+    metadata:
+      labels:
+        app: rancher-app
+    spec:
+      containers:
+        - name: rancher-container
+          image: rancher/rancher:v2.7.5
+          ports:
+            - containerPort: 80
+              name: unsecure
+              hostPort: 90
+            - containerPort: 443
+              name: secure
+              hostPort: 7443
+          volumeMounts:
+            - name: rancher-data
+              mountPath: /var/lib/rancher
+      volumes:
+        - name: rancher-data
+          persistentVolumeClaim:
+            claimName: rancher-pvc

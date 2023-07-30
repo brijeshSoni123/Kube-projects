@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vaultwarden
+  namespace: adguard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vaultwarden
+  template:
+    metadata:
+      labels:
+        app: vaultwarden
+    spec:
+      containers:
+      - name: vaultwarden
+        image: vaultwarden/server:latest
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /data/
+          name: data
+      volumes:
+      - name: data
+        hostPath:
+          path: /home/brsoni/kube/bitwarden/data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vaultwarden
+spec:
+  selector:
+    app: vaultwarden
+  ports:
+  - protocol:TCP
+    port: 80
+    targetPort: 80
